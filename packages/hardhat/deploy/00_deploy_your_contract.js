@@ -22,6 +22,16 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
     log: true,
     waitConfirmations: 2,
   });
+
+  console.log("address: ", BTNDeploment.address);
+  const BTNContract = await ethers.getContractAt(
+    "ERC1155",
+    BTNDeploment.address
+  );
+  await BTNContract.mint(deployer, 0, 1000);
+  console.log("minted");
+
+  return;
   const TKNDeployment = await deploy("ERC1155", {
     from: deployer,
     log: true,

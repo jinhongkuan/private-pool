@@ -1717,7 +1717,7 @@
     "@ethersproject/logger" "^5.6.0"
     "@ethersproject/properties" "^5.6.0"
 
-"@ethersproject/address@^5.0.0-beta", "@ethersproject/address@^5.0.8", "@ethersproject/address@^5.4.0", "@ethersproject/address@>=5.0.0-beta.128", "@ethersproject/address@5.4.0":
+"@ethersproject/address@^5.0.0", "@ethersproject/address@^5.0.0-beta", "@ethersproject/address@^5.0.2", "@ethersproject/address@^5.0.8", "@ethersproject/address@^5.4.0", "@ethersproject/address@>=5.0.0-beta.128", "@ethersproject/address@5.4.0":
   "integrity" "sha512-SD0VgOEkcACEG/C6xavlU1Hy3m5DGSXW3CUHkaaEHbAPPsgi0coP5oNPsxau8eTlZOk/bpa/hKeCNoK5IzVI2Q=="
   "resolved" "https://registry.npmjs.org/@ethersproject/address/-/address-5.4.0.tgz"
   "version" "5.4.0"
@@ -1727,17 +1727,6 @@
     "@ethersproject/keccak256" "^5.4.0"
     "@ethersproject/logger" "^5.4.0"
     "@ethersproject/rlp" "^5.4.0"
-
-"@ethersproject/address@^5.0.2":
-  "integrity" "sha512-l4Nj0eWlTUh6ro5IbPTgbpT4wRbdH5l8CQf7icF7sb/SI3Nhd9Y9HzhonTSTi6CefI0necIw7LJqQPopPLZyWw=="
-  "resolved" "https://registry.npmjs.org/@ethersproject/address/-/address-5.5.0.tgz"
-  "version" "5.5.0"
-  dependencies:
-    "@ethersproject/bignumber" "^5.5.0"
-    "@ethersproject/bytes" "^5.5.0"
-    "@ethersproject/keccak256" "^5.5.0"
-    "@ethersproject/logger" "^5.5.0"
-    "@ethersproject/rlp" "^5.5.0"
 
 "@ethersproject/address@^5.5.0":
   "integrity" "sha512-l4Nj0eWlTUh6ro5IbPTgbpT4wRbdH5l8CQf7icF7sb/SI3Nhd9Y9HzhonTSTi6CefI0necIw7LJqQPopPLZyWw=="
@@ -2275,7 +2264,7 @@
     "elliptic" "6.5.4"
     "hash.js" "1.1.7"
 
-"@ethersproject/solidity@^5.0.0-beta", "@ethersproject/solidity@^5.4.0", "@ethersproject/solidity@5.4.0":
+"@ethersproject/solidity@^5.0.0", "@ethersproject/solidity@^5.0.0-beta", "@ethersproject/solidity@^5.4.0", "@ethersproject/solidity@5.4.0":
   "integrity" "sha512-XFQTZ7wFSHOhHcV1DpcWj7VXECEiSrBuv7JErJvB9Uo+KfCdc3QtUZV+Vjh/AAaYgezUEKbCtE6Khjm44seevQ=="
   "resolved" "https://registry.npmjs.org/@ethersproject/solidity/-/solidity-5.4.0.tgz"
   "version" "5.4.0"
@@ -4112,6 +4101,18 @@
   "resolved" "https://registry.npmjs.org/@uniswap/lib/-/lib-1.1.1.tgz"
   "version" "1.1.1"
 
+"@uniswap/sdk-core@^3.0.0-alpha.3":
+  "integrity" "sha512-WbeDkhZ9myVR0VnHOdTrb8nHKKkqTFa5uE9RvUbG3eyDt2NWWDwhhqGHwAWJEHG405l30Fa1u3PogHDFsIOQlA=="
+  "resolved" "https://registry.npmjs.org/@uniswap/sdk-core/-/sdk-core-3.0.1.tgz"
+  "version" "3.0.1"
+  dependencies:
+    "@ethersproject/address" "^5.0.2"
+    "big.js" "^5.2.2"
+    "decimal.js-light" "^2.5.0"
+    "jsbi" "^3.1.4"
+    "tiny-invariant" "^1.1.0"
+    "toformat" "^2.0.0"
+
 "@uniswap/sdk@^3.0.3":
   "integrity" "sha512-t4s8bvzaCFSiqD2qfXIm3rWhbdnXp+QjD3/mRaeVDHK7zWevs6RGEb1ohMiNgOCTZANvBayb4j8p+XFdnMBadQ=="
   "resolved" "https://registry.npmjs.org/@uniswap/sdk/-/sdk-3.0.3.tgz"
@@ -4147,6 +4148,17 @@
   dependencies:
     "@uniswap/lib" "1.1.1"
     "@uniswap/v2-core" "1.0.0"
+
+"@uniswap/v2-sdk@^3.0.1":
+  "integrity" "sha512-eSpm2gjo2CZh9FACH5fq42str/oSNyWcDxB27o5k44bEew4sxb+pld4gGIf/byJndLBvArR9PtH8c0n/goNOTw=="
+  "resolved" "https://registry.npmjs.org/@uniswap/v2-sdk/-/v2-sdk-3.0.1.tgz"
+  "version" "3.0.1"
+  dependencies:
+    "@ethersproject/address" "^5.0.0"
+    "@ethersproject/solidity" "^5.0.0"
+    "@uniswap/sdk-core" "^3.0.0-alpha.3"
+    "tiny-invariant" "^1.1.0"
+    "tiny-warning" "^1.0.3"
 
 "@walletconnect/browser-utils@^1.5.2":
   "integrity" "sha512-nP7ktHwYmvHfXIbq7lGPoig8nO7HYi2dWE8UDxBlgNMs4mvzm2jyN6cm0JZ4xh5gO90/gQwbyuU33zLcZGUPhw=="
@@ -14457,7 +14469,7 @@
     "argparse" "^1.0.7"
     "esprima" "^4.0.0"
 
-"jsbi@^3.1.1":
+"jsbi@^3.1.1", "jsbi@^3.1.4":
   "integrity" "sha512-w2BY0VOYC1ahe+w6Qhl4SFoPvPsZ9NPHY4bwass+LCgU7RK3PBoVQlQ3G1s7vI8W3CYyJiEXcbKF7FIM/L8q3Q=="
   "resolved" "https://registry.npmjs.org/jsbi/-/jsbi-3.1.5.tgz"
   "version" "3.1.5"

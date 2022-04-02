@@ -2,7 +2,7 @@ pragma solidity >=0.8.0 <0.9.0;
 //SPDX-License-Identifier: MIT
 
 import "hardhat/console.sol";
-
+import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol"; 
 
 struct basketInfo {
     address[] tokenAddresses;
@@ -16,10 +16,12 @@ contract MasterVault {
     mapping(uint256 => basketInfo) basketInfoMap;
     address bptAddress;
     address tknAddress;
+    address baseAddress; 
 
-    constructor(address _bptAddress, address _tknAddress) {
+    constructor(address _bptAddress, address _tknAddress, address _baseAddress) {
         bptAddress = _bptAddress;
         tknAddress = _tknAddress;
+        baseAddress = _baseAddress;
     }
 
     function createBasket(address[] _tokens, uint256[] _amounts) payable {
