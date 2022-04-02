@@ -17,16 +17,16 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const { deployer } = await getNamedAccounts();
   const chainId = await getChainId();
 
-  const BPTDeployment = await deploy("ERC1155", {
+  const BPTDeployment = await deploy("BlenderTokens", {
     from: deployer,
     log: true,
     waitConfirmations: 2,
   });
 
-  console.log("address: ", BTNDeploment.address);
+  console.log("address: ", BPTDeployment.address);
   const BTNContract = await ethers.getContractAt(
-    "ERC1155",
-    BTNDeploment.address
+    "BlenderTokens",
+    BPTDeployment.address
   );
   await BTNContract.mint(deployer, 0, 1000);
   console.log("minted");

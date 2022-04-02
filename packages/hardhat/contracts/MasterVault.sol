@@ -6,17 +6,17 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
 struct basketInfo {
     address[] tokenAddresses;
-    uint256[] tknRatio;
-    uint256[] bptRatio;
+    uint256[] originalTokenAmounts;
     uint256[] tokenAmounts;
     uint256 tokenExpiration;
   }
 
 contract MasterVault {
-    mapping(uint256 => basketInfo) basketInfoMap;
-    address bptAddress;
-    address tknAddress;
-    address baseAddress; 
+    mapping(uint256 => basketInfo) public basketInfoMap;
+    address public bptAddress;
+    address public baseAddress;
+    address public tknAddress;
+    uint256 public MAX_INT = 2**256 - 1;
 
     constructor(address _bptAddress, address _tknAddress, address _baseAddress) {
         bptAddress = _bptAddress;
@@ -24,31 +24,47 @@ contract MasterVault {
         baseAddress = _baseAddress;
     }
 
-    function createBasket(address[] _tokens, uint256[] _amounts) payable {
+    function createBasket(address[] _tokens, uint256[] _amounts) payable public returns (bool) {
         for (uint256 i = 0; i < tokens.length; i++) {
-            require(_tokens[i].transferFrom(msg.sender, this, _amounts[i]));
+            _tokens[i].transferFrom(msg.sender, this, _amounts[i]);
         }
-
+        
+        return true;
     }
 
-    function addToBasket() payable {
-
+    function addToBasket(uint256 _basketId, uint256[] _amounts) payable public returns (bool) {
+        require(block.timestamp < basketInfoMap[_basketId].tokenExpiration);
+        uint256 tknsAwarded = MAX_INT;
+        uint256 bptsAwarded = MAX_INT;
+        for (uint256 i = 0; i < basketInfoMap[_basketId].tokenAddresses.length; i++) {
+            basketInfoMap[_basketId].tokenAddresses[i].transferFrom(msg.sender, this, _amounts[i]);
+            tokenAwardRatio = (_amounts[i] / basketInfoMap[_basketId].originalTokenAmounts[i]);
+            if (tokenAwardRatio * 1000 * (10 ** 18) < tknsAwarded) {
+                tknsAwarded = tokenAwardRatio * 1000 * (10 ** 18);
+            }
+            if (tokenRatio * 1 * (10 ** 18) < bptsAwarded) {
+                bptsAwarded = tokenAwardRatio * 1 (10 ** 18);
+            }
+        }
+        tknAddress.safeTransferFrom(this, msg.sender, tknsAwarded, "");
+        bptAddress.safeTransferFrom(this, msg.sender, bptsAwarded, "");
+        return true;
     }
 
-    function recoverBasket(uint256 _bptId, uint256 _amount) returns (bool) { // only BPT
+    function recoverBasket(uint256 _bptId, uint256 _amount) public returns (bool) { // only BPT
         require(block.timestamp >= basketInfoMap[_bptId].tokenExpiration);
-        require(bptAddress.safeTransferFrom(msg.sender, this, _bptId, _amount, ""));
+        bptAddress.safeTransferFrom(msg.sender, this, _bptId, _amount, "");
         for (uint256 i = 0; i < basketInfoMap[_bptId].tokenAddresses; i++) {
-            basketInfoMap[_bptId].tokenAddresses[i].transferFrom(this, msg.sender, (basketInfoMap[_bptId].bptRatio[i] * _amount));
+            basketInfoMap[_bptId].tokenAddresses[i].transferFrom(this, msg.sender, ( (basketInfoMap[_bptId].tokenAmounts[i] / bptAddress.supply[_bptId]) * _amount));
         }
+        return true;
     }
 
-    function redeemTkn(uint256 _tknId, uint256 _amount) { // only TKN
+    function redeemTkn(uint256 _tknId, uint256 _amount, address _newTokenAddress) public returns (bool) { // only TKN
         require(block.timestamp < basketInfoMap[_tknId].tokenExpiration);
-        require(tknAddress.safeTransferFrom(msg.sender, this, _tknId, _amount, ""));
-        for (uint256 i = 0; i < basketInfoMap[_tknId].tokenAddresses; i++) {
-            basketInfoMap[_tknId].tokenAddresses[i].transferFrom(this, msg.sender, (basketInfoMap[_tknId].tknRatio[i] * _amount));
-        }
+        tknAddress.safeTransferFrom(msg.sender, this, _tknId, _amount, "");
+        _newTokenAddress.transferFrom(this, msg.sender, ( (basketInfoMap[_tknId].tokenAmounts[i] / tknAddress.totalSupply[_tknID]) * _amount));
+        return true;
     }
 
     // to support receiving ETH by default

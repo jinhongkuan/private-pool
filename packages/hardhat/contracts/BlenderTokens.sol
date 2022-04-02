@@ -5,9 +5,9 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 
-contract ERC1155 is ERC1155, Ownable {
+contract BlenderTokens is ERC1155, Ownable {
 
-    mapping(uint256 => uint256) totalSupply;
+    mapping(uint256 => uint256) public totalSupply;
 
     constructor() ERC1155("") {
         
@@ -18,8 +18,8 @@ contract ERC1155 is ERC1155, Ownable {
         totalSupply[id] += amount; 
     }
 
-    function burn(uint256 id, uint256 amount) onlyOwner public {
-        _burn(recipient, id, amount, "");
+    function burn(address recipient, uint256 id, uint256 amount) onlyOwner public {
+        _burn(recipient, id, amount);
         totalSupply[id] -= amount; 
     }
 }
