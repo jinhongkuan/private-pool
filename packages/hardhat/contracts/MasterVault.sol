@@ -23,7 +23,7 @@ contract MasterVault {
     }
 
     function createBasket(address[] _tokens, uint256[] _amounts) payable public returns (bool) {
-        for (uint256 i = 0; i < tokens.length; i++) {
+        for (uint256 i = 0; i < _tokens.length; i++) {
             _tokens[i].transferFrom(msg.sender, this, _amounts[i]);
         }
 
@@ -37,12 +37,12 @@ contract MasterVault {
         for (uint256 i = 0; i < basketInfoMap[_basketId].tokenAddresses.length; i++) {
             basketInfoMap[_basketId].tokenAddresses[i].transferFrom(msg.sender, this, _amounts[i]);
             basketInfoMap[_basketId].tokenAmounts[i] -= _amounts[i];
-            tokenAwardRatio = (_amounts[i] / basketInfoMap[_basketId].originalTokenAmounts[i]);
-            if (tokenAwardRatio * 1000 * (10 ** 18) < tknsAwarded) {
-                tknsAwarded = tokenAwardRatio * 1000 * (10 ** 18);
+            uint256 tokenAwardRatio = (_amounts[i] / basketInfoMap[_basketId].originalTokenAmounts[i]);
+            if (tokenAwardRatio * 1000 < tknsAwarded) {
+                tknsAwarded = tokenAwardRatio * 1000;
             }
-            if (tokenRatio * 1 * (10 ** 18) < bptsAwarded) {
-                bptsAwarded = tokenAwardRatio * 1 (10 ** 18);
+            if (tokenRatio * 1 < bptsAwarded) {
+                bptsAwarded = tokenAwardRatio * 1;
             }
         }
         tknAddress.safeTransferFrom(this, msg.sender, tknsAwarded, "");
