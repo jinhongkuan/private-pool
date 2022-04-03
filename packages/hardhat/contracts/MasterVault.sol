@@ -78,7 +78,7 @@ contract MasterVault {
         for (uint256 i = 0; i < basketInfoMap[_basketId].tokenAddresses.length; i++) {
             IERC20 token = IERC20(basketInfoMap[_basketId].tokenAddresses[i]);
             token.transferFrom(msg.sender, address(this), _amounts[i]);
-            basketInfoMap[_basketId].tokenAmounts[i] -= _amounts[i];
+            basketInfoMap[_basketId].tokenAmounts[i] += _amounts[i];
             uint256 tokenAwardRatio = (_amounts[i] / basketInfoMap[_basketId].originalTokenAmounts[i]);
             if (tokenAwardRatio * 1000 < tknsAwarded) {
                 tknsAwarded = tokenAwardRatio * 1000;
