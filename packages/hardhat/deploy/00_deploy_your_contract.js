@@ -15,7 +15,10 @@ const localChainId = "31337";
 module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
+  console.log(deployer);
   const chainId = await getChainId();
+
+  const rinkebyDAI = "0xc7AD46e0b8a400Bb3C915120d284AafbA8fc4735";
 
   const BPTDeployment = await deploy("BlenderTokens", {
     from: deployer,
@@ -23,30 +26,50 @@ module.exports = async ({ getNamedAccounts, deployments, getChainId }) => {
     waitConfirmations: 2,
   });
 
-  console.log("address: ", BPTDeployment.address);
+  console.log("BPT address: ", BPTDeployment.address);
   const BTNContract = await ethers.getContractAt(
     "BlenderTokens",
     BPTDeployment.address
   );
-  await BTNContract.mint(deployer, 0, 1000);
-  console.log("minted");
 
-  return;
-  const TKNDeployment = await deploy("ERC1155", {
+  const TKNDeployment = await deploy("BlenderTokens", {
     from: deployer,
     log: true,
     waitConfirmations: 2,
   });
 
+  console.log("TKN address: ", TKNDeployment.address);
+  const TKNContract = await ethers.getContractAt(
+    "BlenderTokens",
+    TKNDeployment.address
+  );
+  console.log(await TKNContract.owner());
+  console.log(deployer);
+  // const DAIDeployment = await deploy("DAI", {
+  //   from: deployer,
+  //   log: true,
+  //   waitConfirmations: 2,
+  // });
+
+  // console.log("DAI address: ", DAIDeployment.address);
+  // const DAIContract = await ethers.getContractAt("DAI", DAIDeployment.address);
+
   const MasterVaultDeployment = await deploy("MasterVault", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    args: [BPTDeployment.address, TKNDeployment.address],
+    args: [BPTDeployment.address, TKNDeployment.address, rinkebyDAI],
     log: true,
-    waitConfirmations: 5,
+    waitConfirmations: 2,
   });
 
-  console.log(MasterVault);
+  await BTNContract.transferOwnership(MasterVaultDeployment.address, {
+    from: deployer,
+  });
+  await TKNContract.transferOwnership(MasterVaultDeployment.address, {
+    from: deployer,
+  });
+
+  console.log("MasterVault address: ", MasterVaultDeployment.address);
 
   // const MasterVault = await ethers.getContract("MasterVault", deployer);
 

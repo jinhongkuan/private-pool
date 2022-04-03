@@ -10,7 +10,6 @@ contract BlenderTokens is ERC1155, Ownable {
     mapping(uint256 => uint256) public totalSupply;
 
     constructor() ERC1155("") {
-        
     } 
 
     function mint(address recipient, uint256 id, uint256 amount) onlyOwner public {

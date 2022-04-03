@@ -7,6 +7,8 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "./BlenderTokens.sol";
+import "./library/SafeMath.sol";
+import "./library/UQ112xUQ112.sol";
 
 struct basketInfo {
     address[] tokenAddresses;
@@ -16,12 +18,14 @@ struct basketInfo {
   }
 
 contract MasterVault {
+    using SafeMath  for uint;
+    using UQ112x112 for uint224;
+
     mapping(uint256 => basketInfo) public basketInfoMap;
     address public bptAddress;
     address public baseAddress;
     address public tknAddress;
     address public uniswapFactory = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
-    address public daiAddress = 0xc7AD46e0b8a400Bb3C915120d284AafbA8fc4735;
     uint256 public MAX_INT = 2**256 - 1;
     uint256 public currentId = 0;
 
@@ -39,10 +43,10 @@ contract MasterVault {
         for (uint256 i = 0; i < _tokens.length; i++) {
             IERC20 token = IERC20(_tokens[i]);
             token.transferFrom(msg.sender, address(this), _amounts[i]);
-            IUniswapV2Pair uniswapPairCast = IUniswapV2Pair(uniswapFactoryCast.getPair(_tokens[i], daiAddress));
-            pricePerToken[i] = uniswapPairCast.price0CumulativeLast();
-            if (_amounts[i] * pricePerToken[i] < minTokenValue) {
-                minTokenValue = _amounts[i] * pricePerToken[i];
+            IUniswapV2Pair uniswapPairCast = IUniswapV2Pair(uniswapFactoryCast.getPair(_tokens[i], baseAddress));
+            pricePerToken[i] = uint256(uniswapPairCast.price0CumulativeLast()) / 2**112;
+            if (_amounts[i].mul(pricePerToken[i]) < minTokenValue) {
+                minTokenValue = _amounts[i].mul(pricePerToken[i]);
             }
         }
 
