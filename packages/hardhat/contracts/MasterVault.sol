@@ -75,17 +75,20 @@ contract MasterVault {
         require(block.timestamp < basketInfoMap[_basketId].tokenExpiration);
         uint256 tknsAwarded = MAX_INT;
         uint256 bptsAwarded = MAX_INT;
+        uint256 tokenAwardRatio;
         for (uint256 i = 0; i < basketInfoMap[_basketId].tokenAddresses.length; i++) {
             IERC20 token = IERC20(basketInfoMap[_basketId].tokenAddresses[i]);
             token.transferFrom(msg.sender, address(this), _amounts[i]);
-            basketInfoMap[_basketId].tokenAmounts[i] += _amounts[i];
-            uint256 tokenAwardRatio = (_amounts[i] / basketInfoMap[_basketId].originalTokenAmounts[i]);
+            tokenAwardRatio = (_amounts[i] / basketInfoMap[_basketId].originalTokenAmounts[i]);
             if (tokenAwardRatio * 1000 < tknsAwarded) {
                 tknsAwarded = tokenAwardRatio * 1000;
             }
             if (tokenAwardRatio * 1 < bptsAwarded) {
                 bptsAwarded = tokenAwardRatio * 1;
             }
+        }
+        for (uint256 i = 0; i < basketInfoMap[_basketId].tokenAddresses.length; i++) {
+            basketInfoMap[_basketId].tokenAmounts[i] += basketInfoMap[_basketId].originalTokenAmounts[i] * tokenAwardRatio;
         }
         tokenTkn.safeTransferFrom(address(this), msg.sender, _basketId, tknsAwarded, "");
         tokenBpt.safeTransferFrom(address(this), msg.sender, _basketId, bptsAwarded, "");
