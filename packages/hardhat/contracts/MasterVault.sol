@@ -2,6 +2,7 @@ pragma solidity >=0.8.0 <0.9.0;
 //SPDX-License-Identifier: MIT
 
 import "hardhat/console.sol";
+import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Factory.sol"; 
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol"; 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
@@ -19,7 +20,10 @@ contract MasterVault {
     address public bptAddress;
     address public baseAddress;
     address public tknAddress;
+    address public uniswapFactory = 0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f;
+    address public daiAddress = 0xc7AD46e0b8a400Bb3C915120d284AafbA8fc4735;
     uint256 public MAX_INT = 2**256 - 1;
+    uint256 public currentId = 0;
 
     constructor(address _bptAddress, address _tknAddress, address _baseAddress) {
         bptAddress = _bptAddress;
@@ -27,12 +31,37 @@ contract MasterVault {
         baseAddress = _baseAddress;
     }
 
-    function createBasket(address[] memory _tokens, uint256[] memory _amounts) payable public returns (bool) {
+    function createBasket(address[] memory _tokens, uint256[] memory _amounts, uint256 _time) payable public returns (bool) {
+        IUniswapV2Factory uniswapFactoryCast = IUniswapV2Factory(uniswapFactory);
+        uint256 minTokenValue = MAX_INT;
+        uint256[] memory pricePerToken = new uint256[](_tokens.length);
+
         for (uint256 i = 0; i < _tokens.length; i++) {
             IERC20 token = IERC20(_tokens[i]);
             token.transferFrom(msg.sender, address(this), _amounts[i]);
+            IUniswapV2Pair uniswapPairCast = IUniswapV2Pair(uniswapFactoryCast.getPair(_tokens[i], daiAddress));
+            pricePerToken[i] = uniswapPairCast.price0CumulativeLast();
+            if (_amounts[i] * pricePerToken[i] < minTokenValue) {
+                minTokenValue = _amounts[i] * pricePerToken[i];
+            }
         }
 
+        basketInfo memory newBasket;
+        newBasket.tokenAddresses = _tokens;
+        newBasket.tokenExpiration = _time;
+        for (uint256 i = 0; i < _tokens.length; i++) {
+            newBasket.originalTokenAmounts[i] = minTokenValue / pricePerToken[i];
+            newBasket.tokenAmounts[i] = minTokenValue / pricePerToken[i];
+        }
+        basketInfoMap[currentId] = newBasket;
+
+        BlenderTokens tknAddressCast = BlenderTokens(tknAddress);
+        tknAddressCast.mint(msg.sender, currentId, 1000);
+
+        BlenderTokens bptAddressCast = BlenderTokens(bptAddress);
+        bptAddressCast.mint(msg.sender, currentId, 1);
+
+        currentId += 1;
         return true;
     }
 
